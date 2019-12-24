@@ -49,7 +49,7 @@ ej_min = 50
 ej_max = 100
 n_points = 100
 ej_vec = np.linspace(ej_min, ej_max, n_points)
-n_process = 4
+n_process = 2
 results = np.zeros([4, n_points])
 
 def compute_delta(ec, ng, ec_ref, n_charges, n_fock, ej):
