@@ -50,18 +50,18 @@ class CPB:
         y1 = y1[idx]
         return y1
     
-    def h_cpb_approx(n_order, n_fock):
+    def h_cpb_approx(self, n_order, n_fock):
 
         if np.mod(n_order, 2) != 0:
             raise Exception("The order must be even.")
 
-        ide = qeye(n_fock)
-        a = destroy(n_fock)
+        ide = qutip.qeye(n_fock)
+        a = qutip.destroy(n_fock)
         h = self.omega_p*(a.dag()*a + ide/2) - self.ej*ide
-        phi = self.phi_zpf(a + a.dag())
-        n_eff = n_order/2
+        phi = self.phi_zpf*(a + a.dag())
+        n_eff = int(n_order/2)
         for n in range(2, n_eff + 1):
-            h += self.ej*(-1)**n/(math.factorial(2*n))*phi**(2*n)
+            h += -self.ej*(-1)**n/(math.factorial(2*n))*phi**(2*n)
         return h
 
 
