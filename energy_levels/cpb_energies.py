@@ -127,7 +127,7 @@ for k in range(0, 4):
     ax.semilogy(ej_vec, results[k, :], linewidth=2.0, color=colors[k], label=lab[k])
 ax.set_xlabel('$E_J/E_C$', fontsize=20)
 plt.legend(loc='best', fontsize=16)
-plt.show()
+plt.show(block=False)
 
 # %%
 """ Saving data """
@@ -148,6 +148,7 @@ if answer == 'y':
         'd_anh_four', 'd_anh_four_rwa', 'd_anh_six', 'd_anh_six_rwa']
     for k in range(0, len(name_list)):
         np.save(path + '/' + name_list[k], results[k, :])
+    np.save(path + '/ej_vec', ej_vec)
     param_file=open(path+'/parameters.txt', "w+")
     param_file.write('The data where generated using ' + str(os.path.basename(__file__)) + \
         ' with the \n')
