@@ -1,0 +1,8 @@
+The data where generated using cpb_energies.py with the 
+following parameters. 
+Parameters: 
+n_fock= 10.000000
+n_charges= 20.000000
+EJ_min= 50.000000
+EJ_max= 100.000000
+n_points= 100.000000
