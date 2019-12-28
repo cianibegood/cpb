@@ -131,6 +131,37 @@ plt.show()
 
 # %%
 """ Saving data """
+answer = input("Do you want to save?y/N ")
+if answer != 'y' and answer != 'N':
+    raise Exception('The answer must be either y or N!')
+if answer == 'y':
+    path = os.getcwd()+'/energy_levels/data_approximation_comparison'
+    print(path)
+    try:
+        os.mkdir(path)
+    except OSError:
+        print ("Creation of the directory %s \
+             failed: the directory might already exist" % path)
+    else:
+        print ("Successfully created the directory %s " % path)
+    name_list = ['d_e10_four', 'd_e10_four_rwa', 'd_e10_six', 'd_e10_six_rwa', \
+        'd_anh_four', 'd_anh_four_rwa', 'd_anh_six', 'd_anh_six_rwa']
+    for k in range(0, len(name_list)):
+        np.save(path + '/' + name_list[k], results[k, :])
+    param_file=open(path+'/parameters.txt', "w+")
+    param_file.write('The data where generated using ' + str(os.path.basename(__file__)) + \
+        ' with the \n')
+    param_file.write('following parameters. \n')
+    param_file.write('Parameters: \n')
+    param_file.write('n_fock= %f' % n_fock + '\n')
+    param_file.write('n_charges= %f' % n_charges + '\n')
+    param_file.write('EJ_min= %f' % ej_min + '\n')
+    param_file.write('EJ_max= %f' % ej_max + '\n')
+    param_file.write('n_points= %f' % n_points + '\n')
+
+    
+
+
 
 
 
