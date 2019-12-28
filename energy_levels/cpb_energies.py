@@ -5,8 +5,11 @@
 import numpy as np
 import math
 import scipy.linalg as la
+import matplotlib
 import matplotlib.pyplot as plt
-import cpb 
+import sys
+sys.path.append('/home/ciani/Work/python/github_repos/cpb')
+import cpb
 import time
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 import multiprocessing 
@@ -91,10 +94,6 @@ ej_vec = np.linspace(ej_min, ej_max, n_points)
 n_process = 2
 results = np.zeros([4, n_points])
 
-
-
-
-
 #%%
 """ Parallel loop """
 
@@ -115,9 +114,9 @@ end = time.time()
 
 print(f'Computation time parallel with {n_process} processes = {end - start}')
 
-
 # %%
 """ Plots """
+
 lab = ["$|\Delta \omega_{10}^{4th}/\omega_{10}|$", \
     "$|\Delta \omega_{10}^{6th}/\omega_{10}|$", \
         "$|\Delta \delta^{4th}/\delta|$", \
@@ -133,3 +132,6 @@ plt.show()
 # %%
 """ Saving data """
 
+
+
+# %%
