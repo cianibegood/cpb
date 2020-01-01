@@ -39,14 +39,14 @@ def compute_delta(ec, ng, ec_ref, n_charges, n_fock, ej):
     delta_four_rwa = evals_four_rwa[2] - 2*evals_four_rwa[1]
     delta_six = evals_six[2] - 2*evals_six[1]
     delta_six_rwa = evals_six_rwa[2] - 2*evals_six_rwa[1]
-    d_e10_four = np.abs((evals_four[1] - evals[1])/evals[1])
-    d_e10_four_rwa = np.abs((evals_four_rwa[1] - evals[1])/evals[1])
-    d_e10_six = np.abs((evals_six[1] - evals[1])/evals[1])
-    d_e10_six_rwa = np.abs((evals_six_rwa[1] - evals[1])/evals[1])
-    d_anh_four = np.abs((delta_four - delta)/delta)
-    d_anh_four_rwa = np.abs((delta_four_rwa - delta)/delta)
-    d_anh_six = np.abs((delta_six - delta)/delta)
-    d_anh_six_rwa = np.abs((delta_six_rwa - delta)/delta)
+    d_e10_four = (evals_four[1] - evals[1])/evals[1]
+    d_e10_four_rwa = (evals_four_rwa[1] - evals[1])/evals[1]
+    d_e10_six = (evals_six[1] - evals[1])/evals[1]
+    d_e10_six_rwa = (evals_six_rwa[1] - evals[1])/evals[1]
+    d_anh_four = (np.abs(delta_four) - np.abs(delta))/np.abs(delta)
+    d_anh_four_rwa = (np.abs(delta_four_rwa) - np.abs(delta))/np.abs(delta)
+    d_anh_six = (np.abs(delta_six) - np.abs(delta))/np.abs(delta)
+    d_anh_six_rwa = (np.abs(delta_six_rwa) - np.abs(delta))/np.abs(delta)
     y = np.array([d_e10_four, d_e10_four_rwa, d_e10_six, d_e10_six_rwa, \
         d_anh_four, d_anh_four_rwa, d_anh_six, d_anh_six_rwa])
     return y
@@ -61,7 +61,7 @@ ng = 0
 qubit = cpb.CPB(ec, ej, ng, ec_ref)
 n_charges = 20
 n_fock = 10
-n_order = 4
+n_order = 6
 
 
 # %%
@@ -70,18 +70,33 @@ n_order = 4
 evals = qubit.eigenenergies(n_charges)
 evals_approx = qubit.h_cpb_approx(n_order, n_fock).eigenenergies()
 evals_rwa = qubit.h_cpb_rwa(n_order, n_fock).eigenenergies()
-
-
+evals_next_rwa = qubit.h_cpb_next_rwa(n_order, n_fock).eigenenergies()
+evals +=- evals[0]
+evals_approx += -evals_approx[0]
+evals_rwa += -evals_rwa[0]
+evals_next_rwa += -evals_next_rwa[0]
+delta = evals[2] - 2*evals[1]
+delta_approx = evals_approx[2] - 2*evals_approx[1]
+delta_rwa = evals_rwa[2] - 2*evals_rwa[1]
+delta_next_rwa = evals_next_rwa[2] - 2*evals_next_rwa[1]
 
 # %%
 """ Printing results """
 
-print('Exact = ' + str(np.real(evals[0:6] - evals[0])*ec_ref))
-print('Approximate order ' + str(n_order) + 'th = ' + \
-    str((evals_approx[0:6] - evals_approx[0])*ec_ref))
+print('Exact E01 = ' + str(np.real(evals[1])))
+print('Approximate order ' + str(n_order) + 'th E01 = ' + \
+    str((evals_approx[1])))
+print('Approximate rwa order ' + str(n_order) + 'th E01 = ' + \
+    str((evals_rwa[1])))
+print('Approximate next rwa order ' + str(n_order) + 'th E01 = ' + \
+    str((evals_next_rwa[1])))
+print('Exact anharmonicity = ' + str(delta))
+print('Approximate order ' + str(n_order) + 'th anharmonicity = ' + \
+    str(delta_approx))
 print('Approximate rwa order ' + str(n_order) + 'th = ' + \
-    str((evals_rwa[0:6] - evals_rwa[0])*ec_ref))
-
+    str(delta_rwa))
+print('Approximate next rwa order ' + str(n_order) + 'th = ' + \
+    str(delta_next_rwa))
 
 # %%
 """ We now want to critically compare the 4th order and 6th order

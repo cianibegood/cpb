@@ -77,6 +77,20 @@ class CPB:
             h += -self.ej*(-1)**n/(math.factorial(2*n))*\
                 pow_op_rwa(2*n, self.phi_zpf*a)
         return h
+    
+    def h_cpb_next_rwa(self, n_order, n_fock):
+
+        if np.mod(n_order, 2) != 0:
+            raise Exception("The order must be even.")
+
+        ide = qutip.qeye(n_fock)
+        a = qutip.destroy(n_fock)
+        h = self.omega_p*(a.dag()*a + ide/2) - self.ej*ide
+        n_eff = int(n_order/2)
+        for n in range(2, n_eff + 1):
+            h += -self.ej*(-1)**n/(math.factorial(2*n))*\
+                pow_op_next_rwa(2*n, self.phi_zpf*a)
+        return h
 
 
 
@@ -122,6 +136,39 @@ def pow_op_rwa(n, op):
         comb[-len(comb_rep):] = comb_rep
         y = 0
         if np.sum(comb) == int(n/2):
+            if comb[n-1] == 1:
+                y = op.dag()
+            elif comb[n-1] == 0:
+                y = op
+            for m in range(1, n):
+                if comb[n-1-m] == 1:
+                    y = op.dag()*y
+                elif comb[n-1-m] == 0:
+                    y = op*y
+            y_sum += y 
+    return y_sum
+
+def pow_op_next_rwa(n, op):
+
+    """ It returns the operator (op + op^{dag})^n performing a "next" rwa,
+    i.e., neglecting terms for which the number of annihilation and 
+    creation operators differ by at most 1. It uses qutip. """
+
+    if np.mod(n, 2) != 0:
+            raise Exception("The order must be even. If odd the result is 0.")
+    
+    y_sum = 0
+    for k in range(0, 2**n):
+        """ We represent the number in base 2 and convert it first
+        as list and then numpy array """
+        comb_rep = list(np.base_repr(k))
+        comb_rep = list(map(int, comb_rep))
+        comb_rep = np.asarray(comb_rep)
+        comb = np.zeros(n)
+        comb[-len(comb_rep):] = comb_rep
+        y = 0
+        if np.sum(comb) == int(n/2) or np.sum(comb) == int(n/2)+1 \
+            or np.sum(comb) == int(n/2)-1 :
             if comb[n-1] == 1:
                 y = op.dag()
             elif comb[n-1] == 0:
