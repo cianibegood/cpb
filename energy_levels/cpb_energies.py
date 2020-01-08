@@ -8,7 +8,9 @@ import scipy.linalg as la
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
+import os
 sys.path.append('/home/ciani/Work/python/github_repos/cpb')
+sys.path.append(os.getcwd())
 import cpb
 import time
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
@@ -17,7 +19,7 @@ from functools import partial
 import itertools
 import qutip
 import importlib
-import os
+
 
 #%%
 def compute_delta(ec, ng, ec_ref, n_charges, n_fock, ej):
@@ -27,28 +29,42 @@ def compute_delta(ec, ng, ec_ref, n_charges, n_fock, ej):
     evals = q.eigenenergies(n_charges)[0:n_lev]
     evals_four = q.h_cpb_approx(4, n_fock).eigenenergies()[0:n_lev]
     evals_four_rwa = q.h_cpb_rwa(4, n_fock).eigenenergies()[0:n_lev]
+    evals_four_rwa_next = q.h_cpb_next_rwa(4, n_fock).eigenenergies()[0:n_lev]
+    evals_six_rwa_next = q.h_cpb_next_rwa(6, n_fock).eigenenergies()[0:n_lev]
     evals_six = q.h_cpb_approx(6, n_fock).eigenenergies()[0:n_lev]
     evals_six_rwa = q.h_cpb_rwa(6, n_fock).eigenenergies()[0:n_lev]
     evals = evals - evals[0]
     evals_four = evals_four - evals_four[0]
     evals_four_rwa = evals_four_rwa - evals_four_rwa[0]
+    evals_four_rwa_next = evals_four_rwa_next - evals_four_rwa_next[0]
     evals_six = evals_six - evals_six[0]
     evals_six_rwa = evals_six_rwa - evals_six_rwa[0]
+    evals_six_rwa_next = evals_six_rwa_next - evals_six_rwa_next[0]
     delta = evals[2] - 2*evals[1]
     delta_four = evals_four[2] - 2*evals_four[1]
     delta_four_rwa = evals_four_rwa[2] - 2*evals_four_rwa[1]
+    delta_four_rwa_next = evals_four_rwa_next[2] - 2*evals_four_rwa_next[1]
     delta_six = evals_six[2] - 2*evals_six[1]
     delta_six_rwa = evals_six_rwa[2] - 2*evals_six_rwa[1]
+    delta_six_rwa_next = evals_six_rwa_next[2] - 2*evals_six_rwa_next[1]
     d_e10_four = (evals_four[1] - evals[1])/evals[1]
     d_e10_four_rwa = (evals_four_rwa[1] - evals[1])/evals[1]
+    d_e10_four_rwa_next = (evals_four_rwa_next[1] - evals[1])/evals[1]
     d_e10_six = (evals_six[1] - evals[1])/evals[1]
     d_e10_six_rwa = (evals_six_rwa[1] - evals[1])/evals[1]
+    d_e10_six_rwa_next = (evals_six_rwa_next[1] - evals[1])/evals[1]
     d_anh_four = (np.abs(delta_four) - np.abs(delta))/np.abs(delta)
     d_anh_four_rwa = (np.abs(delta_four_rwa) - np.abs(delta))/np.abs(delta)
+    d_anh_four_rwa_next = (np.abs(delta_four_rwa_next) - \
+        np.abs(delta))/np.abs(delta)
     d_anh_six = (np.abs(delta_six) - np.abs(delta))/np.abs(delta)
     d_anh_six_rwa = (np.abs(delta_six_rwa) - np.abs(delta))/np.abs(delta)
-    y = np.array([d_e10_four, d_e10_four_rwa, d_e10_six, d_e10_six_rwa, \
-        d_anh_four, d_anh_four_rwa, d_anh_six, d_anh_six_rwa])
+    d_anh_six_rwa_next = (np.abs(delta_six_rwa_next) - \
+        np.abs(delta))/np.abs(delta)
+    y = np.array([d_e10_four, d_e10_four_rwa, d_e10_four_rwa_next, \
+        d_e10_six, d_e10_six_rwa, d_e10_six_rwa_next, \
+            d_anh_four, d_anh_four_rwa, d_anh_four_rwa_next, \
+                d_anh_six, d_anh_six_rwa,  d_anh_six_rwa_next])
     return y
 
 #%%
@@ -123,7 +139,7 @@ results = p.map(func, ej_vec)
 p.close()
 p.join()
 
-results = np.reshape(results, (n_points, 8)).transpose()
+results = np.reshape(results, (n_points, 12)).transpose()
 
 end = time.time()
 
@@ -159,8 +175,10 @@ if answer == 'y':
              failed: the directory might already exist" % path)
     else:
         print ("Successfully created the directory %s " % path)
-    name_list = ['d_e10_four', 'd_e10_four_rwa', 'd_e10_six', 'd_e10_six_rwa', \
-        'd_anh_four', 'd_anh_four_rwa', 'd_anh_six', 'd_anh_six_rwa']
+    name_list = ['d_e10_four', 'd_e10_four_rwa', 'd_e10_four_rwa_next', \
+        'd_e10_six', 'd_e10_six_rwa', 'd_e10_six_rwa_next', \
+            'd_anh_four', 'd_anh_four_rwa', 'd_anh_four_rwa_next', \
+                'd_anh_six', 'd_anh_six_rwa', 'd_anh_six_rwa_next']
     for k in range(0, len(name_list)):
         np.save(path + '/' + name_list[k], results[k, :])
     np.save(path + '/ej_vec', ej_vec)
