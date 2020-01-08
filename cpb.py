@@ -50,7 +50,7 @@ class CPB:
         y1 = y1[idx]
         return y1
     
-    def h_cpb_approx(self, n_order, n_fock):
+    def h_cpb_taylor(self, n_order, n_fock):
 
         if np.mod(n_order, 2) != 0:
             raise Exception("The order must be even.")

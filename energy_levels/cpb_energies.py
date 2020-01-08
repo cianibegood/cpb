@@ -27,11 +27,11 @@ def compute_delta(ec, ng, ec_ref, n_charges, n_fock, ej):
     q = cpb.CPB(ec, ej, ng, ec_ref)
     n_lev = 3
     evals = q.eigenenergies(n_charges)[0:n_lev]
-    evals_four = q.h_cpb_approx(4, n_fock).eigenenergies()[0:n_lev]
+    evals_four = q.h_cpb_taylor(4, n_fock).eigenenergies()[0:n_lev]
     evals_four_rwa = q.h_cpb_rwa(4, n_fock).eigenenergies()[0:n_lev]
     evals_four_rwa_next = q.h_cpb_next_rwa(4, n_fock).eigenenergies()[0:n_lev]
     evals_six_rwa_next = q.h_cpb_next_rwa(6, n_fock).eigenenergies()[0:n_lev]
-    evals_six = q.h_cpb_approx(6, n_fock).eigenenergies()[0:n_lev]
+    evals_six = q.h_cpb_taylor(6, n_fock).eigenenergies()[0:n_lev]
     evals_six_rwa = q.h_cpb_rwa(6, n_fock).eigenenergies()[0:n_lev]
     evals = evals - evals[0]
     evals_four = evals_four - evals_four[0]
@@ -84,7 +84,7 @@ n_order = 6
 """ Exact and approximate eigenenergies """
 
 evals = qubit.eigenenergies(n_charges)
-evals_approx = qubit.h_cpb_approx(n_order, n_fock).eigenenergies()
+evals_approx = qubit.h_cpb_taylor(n_order, n_fock).eigenenergies()
 evals_rwa = qubit.h_cpb_rwa(n_order, n_fock).eigenenergies()
 evals_next_rwa = qubit.h_cpb_next_rwa(n_order, n_fock).eigenenergies()
 evals +=- evals[0]
